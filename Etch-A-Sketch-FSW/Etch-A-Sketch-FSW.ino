@@ -2,6 +2,7 @@
 #include <SparkFunBME280.h>
 #include <SparkFun_VEML6075_Arduino_Library.h>
 #include <RadiationWatch.h>
+#include <string.h>
 #include "SparkFun_AS7265X.h" //Click here to get the library: http://librarymanager/All#SparkFun_AS7265X
 
 // BBB Objects
@@ -69,12 +70,12 @@ void setup() {
    if (sensor_PTH.beginI2C() == false) //Begin communication over I2C
    {
       Serial.println("PTH Sensor did not respond. Please check wiring.");
-      while(1); //Freeze
+      //while(1); //Freeze
    }
 
    if (sensor_uv.begin() == false) {
       Serial.println("Unable to communicate with UV sensor (VEML6075).");
-      while (1);
+      //while (1);
    }
 
 
@@ -125,47 +126,120 @@ void loop () {
    bbb.sendRFPacketWrap((uint8_t * )(&data_sensor),sizeof(struct_sensor));
 
    // Save BBB Data to SD Card
-   char data_to_save[256];
-   uint32_t length = sprintf(data_to_save,
-      "%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f\n",
-      data_sensor.temperature,
-      data_sensor.pressure,
-      data_sensor.humidity, 
-      data_sensor.uva,
-      data_sensor.uvb,
-      data_sensor.index,
-      data_sensor.ozone,
-      data_sensor.rad,
-      data_sensor.rad_err,
-      data_sensor.spec_a,
-      data_sensor.spec_b,
-      data_sensor.spec_c,
-      data_sensor.spec_d,
-      data_sensor.spec_e,
-      data_sensor.spec_f,
-      data_sensor.spec_g,
-      data_sensor.spec_h,
-      data_sensor.spec_i,
-      data_sensor.spec_j,
-      data_sensor.spec_k,
-      data_sensor.spec_l,
-      data_sensor.spec_r,
-      data_sensor.spec_s,
-      data_sensor.spec_t,
-      data_sensor.spec_u,
-      data_sensor.spec_v,
-      data_sensor.spec_w
-   );
+   char data_to_save[256] = {0};
+   char float_buf[11];
+
+   dtostrf(data_sensor.temperature, 11, 4, float_buf);
+   strcat(data_to_save, float_buf);
+   strcat(data_to_save, ",");
+   dtostrf(data_sensor.pressure, 11, 4, float_buf);
+   strcat(data_to_save, float_buf);
+   strcat(data_to_save, ",");
+   dtostrf(data_sensor.humidity,  11, 4, float_buf);
+   strcat(data_to_save, float_buf);
+   strcat(data_to_save, ",");
+   dtostrf(data_sensor.uva, 11, 4, float_buf);
+   strcat(data_to_save, float_buf);
+   strcat(data_to_save, ",");
+   dtostrf(data_sensor.uvb, 11, 4, float_buf);
+   strcat(data_to_save, float_buf);
+   strcat(data_to_save, ",");
+   dtostrf(data_sensor.index, 11, 4, float_buf);
+   strcat(data_to_save, float_buf);
+   strcat(data_to_save, ",");
+   dtostrf(data_sensor.ozone, 11, 4, float_buf);
+   strcat(data_to_save, float_buf);
+   strcat(data_to_save, ",");
+   dtostrf(data_sensor.rad, 11, 4, float_buf);
+   strcat(data_to_save, float_buf);
+   strcat(data_to_save, ",");
+   dtostrf(data_sensor.rad_err, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_a, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_b, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_c, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_d, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_e, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_f, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_g, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_h, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_i, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_j, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_k, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_l, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_r, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_s, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_t, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_u, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_v, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
+   // dtostrf(data_sensor.spec_w, 11, 4, float_buf);
+   // strcat(data_to_save, float_buf);
 
    Serial.println(data_to_save);
+
+   //uint32_t length = sprintf(data_to_save,
+   //   "%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f\n",
+   //   data_sensor.temperature,
+   //   data_sensor.pressure,
+   //   data_sensor.humidity, 
+   //   data_sensor.uva,
+   //   data_sensor.uvb,
+   //   data_sensor.index,
+   //   data_sensor.ozone,
+   //   data_sensor.rad,
+   //   data_sensor.rad_err,
+   //   data_sensor.spec_a,
+   //   data_sensor.spec_b,
+   //   data_sensor.spec_c,
+   //   data_sensor.spec_d,
+   //   data_sensor.spec_e,
+   //   data_sensor.spec_f,
+   //   data_sensor.spec_g,
+   //   data_sensor.spec_h,
+   //   data_sensor.spec_i,
+   //   data_sensor.spec_j,
+   //   data_sensor.spec_k,
+   //   data_sensor.spec_l,
+   //   data_sensor.spec_r,
+   //   data_sensor.spec_s,
+   //   data_sensor.spec_t,
+   //   data_sensor.spec_u,
+   //   data_sensor.spec_v,
+   //   data_sensor.spec_w
+   //);
       
-   bbb.saveDataToBBB((uint8_t *)data_to_save,length);
+   bbb.saveDataToBBB((uint8_t *)data_to_save, strlen(data_to_save)+1);
 }
 
 
 void onRadiation() {
    data_sensor.rad = sensor_rad.uSvh();
    data_sensor.rad_err = sensor_rad.uSvhError();
+
+   Serial.print("Got Radiation: ");
+   Serial.print(data_sensor.rad, 2);
+   Serial.println();
+
+   Serial.print("Radiation Err: ");
+   Serial.print(data_sensor.rad_err, 2);
+   Serial.println();
 }
 
 
@@ -182,7 +256,7 @@ void getPTHSensorData () {
 
    Serial.print(" Temp: ");
    //Serial.print(sensor_PTH.readTempC(), 2);
-   Serial.print(sensor_PTH.readTempF(), 2);
+   Serial.print(sensor_PTH.readTempC(), 2);
 
    Serial.println();
 
